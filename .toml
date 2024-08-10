@@ -1,0 +1,9 @@
+SECRET_KEY = ''
+
+DEBUG = true
+
+ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = []
+
+[DATABASES]
