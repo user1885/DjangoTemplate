@@ -11,28 +11,33 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import contextlib
 import tomllib
-import os
-
-with open(os.getenv('DJANGO_SETTINGS_FILE'), 'rb') as _settings_file:
-    _settings = tomllib.load(_settings_file)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SETTINGS_FILE = BASE_DIR / 'settings.toml'
 
+__settings__ = {}
+with (
+    contextlib.suppress(FileNotFoundError),
+    open(SETTINGS_FILE, 'rb', ) as _settings_file
+):
+    __settings__.update(tomllib.load(_settings_file))
+    
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = _settings.get('SECRET_KEY') or 'lfq8se!+%y^u57d@f^=^53'
+SECRET_KEY = __settings__.get('SECRET_KEY') or 'lfq8se!+%y^u57d@f^=^53'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = _settings.get('DEBUG') or False
+DEBUG = __settings__.get('DEBUG') or False
 
-ALLOWED_HOSTS = _settings.get('ALLOWED_HOSTS') or ['*']
+ALLOWED_HOSTS = __settings__.get('ALLOWED_HOSTS') or ['*']
 
-CSRF_TRUSTED_ORIGINDS = _settings.get('CSRF_TRUSTED_ORIGINS') or []
+CSRF_TRUSTED_ORIGINDS = __settings__.get('CSRF_TRUSTED_ORIGINS') or []
 
 AUTH_USER_MODEL = 'custom_auth.CustomUser'
 
@@ -89,7 +94,7 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = _settings.get('DATABASES') or {
+DATABASES = __settings__.get('DATABASES') or {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3'
